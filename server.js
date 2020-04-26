@@ -1,31 +1,23 @@
-const express = require("express");
-const graphqlhttp = require("express-graphql");
-const mongoose = require("mongoose");
+require("dotenv").config()
+const { ApolloServer } = require("apollo-server")
+const mongoose = require("mongoose")
 
-const graphQlSchema = require("./graphql/schema.js");
-const graphQlResolvers = require("./graphql/resolvers.js")
+const typeDefs = require("./graphql/schema.js")
+const resolvers = require("./graphql/resolvers.js")
 
-const app = express();
+const server = new ApolloServer({ typeDefs, resolvers })
 
-
-app.use(
-  "/graphql",
-  graphqlhttp({
-    schema: graphQlSchema,
-    rootValue: graphQlResolvers,
-    graphiql: true
-  })
-);
-
-mongoose.connect(
-  `mongodb://localhost/test`, {
+mongoose.connect(process.env.MONGODB, {
   useCreateIndex: true,
   useNewUrlParser: true,
   useUnifiedTopology: true
+}).then(() => {
+  server.listen(3001).then(({ url, subscriptionsUrl }) => {
+    console.log(`Server ready at ${url}`);
+    console.log(`Subscriptions ready at ${subscriptionsUrl}`);
+  })
+}).then(() => {
+  console.log(`server started`)
+}).catch(err => {
+  console.log(err);
 })
-  .then(() => {
-    app.listen(3000, () => console.log("server started"));
-  })
-  .catch(err => {
-    console.log(err);
-  })

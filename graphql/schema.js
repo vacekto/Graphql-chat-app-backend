@@ -1,40 +1,42 @@
-const { buildSchema } = require("graphql");
+const { gql } = require('apollo-server');
 
-/*
-todo{
-  log out
-}
-*/
-
-module.exports = buildSchema(`
-  type Friend {
+module.exports = gql`
+  type DirectChannel {
     _id: ID!
-    userName: String!
+    members: [String!]!
+    channelType: String!
+    channelName: String!
     messages: [Message!]!
-    isOnline: Boolean!
   }
 
   type Room {
     _id: ID!
-    name: String!
-    members: [User!]!
+    channelName: String!
+    members: [String!]!
     messages: [Message!]!
   }
 
   type Message {
     _id: ID!
     text: String!
-    sender: User!
+    sender: String!
+    date: String!
+    members: [String]!
+    channelId: ID!
+    channelType: String!
   } 
 
   type User {
     _id: ID!
     userName: String!
     password: String
+    token: ID
     isOnline: Boolean!
-    friends: [Friend!]!
+    friends: [String!]!
     rooms: [Room!]!
+    directChannels: [DirectChannel!]!
   }
+
 
   input UserInput {
     userName: String!
@@ -48,23 +50,30 @@ module.exports = buildSchema(`
 
   input MessageInput {
     senderName: String!
-    channelName: String!
+    channelType: String!
+    channelId: ID!
     text: String!
     date: String!
   }
 
-  type RootQuery {
+  type Query {
     login(input: UserInput): User
+    directChannel(searchingUser: String, searchedUser: String): DirectChannel!
   }
 
-  type RootMutation {
+  type Mutation {
     register(input: UserInput): User
     addFriend(input: FriendInput): User
     sendMessage(input: MessageInput): Message!
   }
 
-  schema {
-    query: RootQuery
-    mutation: RootMutation
+  type Subscription {
+    getMessages(userName: String!): Message
   }
-`)
+
+  schema {
+    query: Query
+    mutation: Mutation
+    subscription: Subscription
+  }
+`

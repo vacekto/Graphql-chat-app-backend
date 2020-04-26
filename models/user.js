@@ -16,16 +16,17 @@ const userSchema = new Schema({
     type: Boolean,
     default: false
   },
-  friends: [
+  friends: [String],
+  directChannels: [
     {
       type: Schema.Types.ObjectId,
-      ref: "Channel"
+      ref: "directChannel"
     }
   ],
   rooms: [
     {
       type: Schema.Types.ObjectId,
-      ref: "Channel"
+      ref: "Room"
     }
   ]
 })
