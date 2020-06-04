@@ -3,12 +3,14 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const roomSchema = new Schema({
+  members: [String],
+  creator: String,
   channelType: {
     type: String,
     default: "room"
   },
-  channelName: {   
-    type: String,  
+  channelName: {
+    type: String,
     required: true
   },
   messages: [
@@ -22,11 +24,9 @@ const roomSchema = new Schema({
     default: false
   },
   publicRoom: {
-    type:Boolean,
+    type: Boolean,
     default: false
-  },
-  password: String,
-  members: [String],
+  }
 })
 
 module.exports = mongoose.model("Room", roomSchema);
